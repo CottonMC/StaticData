@@ -1,24 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "starter",
+  "id": "staticdata",
   "version": "$version",
 
-  "name": "Fabric Starter",
-  "icon": "assets/starter/icon.png",
-  "description": "Template for starting out Fabric mods",
+  "name": "Static Data",
+  "icon": "assets/staticdata/icon.png",
+  "description": "Early access to non-reloadable data",
   "license": "MIT",
   "contact": {
-    "sources": "https://github.com/CottonMC/FabricStarter"
+    "sources": "https://github.com/CottonMC/StaticData"
   },
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.cottonmc.starter.FabricStarter"
+      "io.github.cottonmc.staticdata.StaticDataInitializer"
     ]
   },
-  "mixins": [
-    "mixins.starter.json"
-  ],
   "depends": {
     "fabricloader": ">=0.4.0"
   },

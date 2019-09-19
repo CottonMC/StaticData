@@ -28,9 +28,9 @@ if(rootProject.file('private.gradle').exists()) { //Publishing details
 	apply from: 'private.gradle'
 }
 
-archivesBaseName = "starter"
+archivesBaseName = "StaticData"
 group = "io.github.cottonmc"
-version = "1.3.2+1.14.4"
+version = "0.0.1"
 
 minecraft {
 }
@@ -46,6 +46,9 @@ dependencies {
 	modApi "net.fabricmc:fabric-loader:0.4.8+build.159"
 	modApi "net.fabricmc.fabric-api:fabric-api:0.3.0+build.207"
 	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+	//For testing
+	modApi "io.github.prospector:modmenu:1.7.13+build.123"
 }
 
 processResources {
