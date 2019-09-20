@@ -8,4 +8,14 @@ This mod gives you access to an additional data pool alongside `assets` and `dat
 
 ## Importing
 
-(TODO when there's a release jar published)
+gradle:
+```groovy
+repositories {
+	maven { url "http://server.bbkr.space:8081/artifactory/libs-release" }
+}
+
+dependencies {
+	modImplementation "io.github.cottonmc:StaticData:1.0.0"
+	include "io.github.cottonmc:StaticData:1.0.0"
+}
+```

@@ -48,7 +48,7 @@ dependencies {
 	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
 	//For testing
-	modApi "io.github.prospector:modmenu:1.7.13+build.123"
+	//modApi "io.github.prospector:modmenu:1.7.13+build.123"
 }
 
 processResources {
