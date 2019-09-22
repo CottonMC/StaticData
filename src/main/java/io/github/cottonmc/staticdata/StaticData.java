@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -228,22 +229,24 @@ public class StaticData {
 		return getInDirectory(id.getNamespace(), id.getPath());
 	}
 	
+	private static String getRelative(Path parent, Path child) {
+		return parent.toAbsolutePath().relativize(child)
+				.toString()
+				.replace(File.pathSeparatorChar, '/')
+				.toLowerCase(Locale.ROOT)
+				.replace(' ', '_')
+				;
+	}
 	
 	private static Identifier toIdentifier(ModContainer container, Path path) {
-		String dir = path.toString();
-		int start = "/static_data/".length();
-		if (dir.length()>=start) dir = dir.substring(start);
-		return new Identifier(container.getMetadata().getId(), dir);
+		String rel = getRelative(container.getRootPath(), path);
+		if (rel.startsWith("static_data/")) { //Should always be true
+			rel = rel.substring("static_data/".length());
+		}
+		return new Identifier(container.getMetadata().getId(), rel);
 	}
 	
 	private static Identifier toGlobalIdentifier(Path root, Path path) {
-		String rootString = root.toAbsolutePath().toString();
-		String pathString = path.toAbsolutePath().toString();
-		if (pathString.length()<=rootString.length()) return new Identifier(GLOBAL_DATA_NAMESPACE, "unknown");
-		String relativePath = pathString.substring(rootString.length()); //This is probably the worst way to do it, but it works
-		if (relativePath.startsWith("/") || relativePath.startsWith(""+File.pathSeparatorChar)) {
-			relativePath = relativePath.substring(1);
-		}
-		return new Identifier(GLOBAL_DATA_NAMESPACE, relativePath);
+		return new Identifier(GLOBAL_DATA_NAMESPACE, getRelative(root, path));
 	}
 }
