@@ -11,14 +11,14 @@ public class StaticDataInitializer implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		
+		/*
 		for(StaticDataItem item : StaticData.getInDirectory("g", "test2")) {
 			try {
 				System.out.println(item.getIdentifier()+">> "+item.getAsString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		/*
 		StaticData.get("g", "test2/test2.md").map(it -> {
 			try {

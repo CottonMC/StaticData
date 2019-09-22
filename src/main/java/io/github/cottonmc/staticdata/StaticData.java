@@ -232,7 +232,7 @@ public class StaticData {
 	private static String getRelative(Path parent, Path child) {
 		return parent.toAbsolutePath().relativize(child)
 				.toString()
-				.replace(File.pathSeparatorChar, '/')
+				.replace(File.separatorChar, '/')
 				.toLowerCase(Locale.ROOT)
 				.replace(' ', '_')
 				;
