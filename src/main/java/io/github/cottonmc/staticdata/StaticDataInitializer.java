@@ -10,7 +10,7 @@ public class StaticDataInitializer implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		/*
-		for(StaticData.DataItem item : StaticData.getInDirectory("staticdata", "test")) {
+		for(StaticDataItem item : StaticData.getInDirectory("g", "test2")) {
 			try {
 				System.out.println(item.getIdentifier()+">> "+item.getAsString());
 			} catch (IOException e) {
@@ -18,7 +18,7 @@ public class StaticDataInitializer implements ModInitializer {
 			}
 		}*/
 		/*
-		StaticData.get("staticdata", "test/test.json").map(it -> {
+		StaticData.get("g", "test2/test2.md").map(it -> {
 			try {
 				return it.getAsString();
 			} catch (IOException e) {

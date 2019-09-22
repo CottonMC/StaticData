@@ -1,5 +1,6 @@
 package io.github.cottonmc.staticdata;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +18,10 @@ import net.minecraft.util.Identifier;
 
 @ParametersAreNonnullByDefault
 public class StaticData {
+	public static final String GLOBAL_DATA_NAMESPACE = "g";
+			//"global_static_data_with_a_long_name_to_eliminate_name_collisions";
+			// ^ This long namespace was a fantastic idea that looks terrible in log statements and
+			// debug strings. It will not be used, but is archived here for posterity.
 	
 	/**
 	 * Gets all data available. All of it. You should probably use a different method instead. The data
@@ -32,12 +37,23 @@ public class StaticData {
 				try(Stream<Path> files = Files.walk(staticDataPath)) {
 					files.forEach((it)->{
 						if (Files.isDirectory(it)) return;
-						System.out.println(it.toString());
 						builder.add(new StaticDataItem(toIdentifier(container, it), it));
 					});
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+		}
+		
+		Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
+		if (Files.isDirectory(globalStaticDataFolder)) {
+			try(Stream<Path> files = Files.walk(globalStaticDataFolder)) {
+				files.forEach((it)->{
+					if (Files.isDirectory(it)) return;
+					builder.add(new StaticDataItem(toGlobalIdentifier(globalStaticDataFolder, it), it));
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -54,9 +70,17 @@ public class StaticData {
 			Path staticDataPath = container.getRootPath().resolve("static_data");
 			if (Files.isDirectory(staticDataPath)) {
 				Path data = staticDataPath.resolve(name);
-				if (Files.exists(data)) {
+				if (Files.exists(data) && !Files.isDirectory(data)) {
 					builder.add(new StaticDataItem(toIdentifier(container,data), data));
 				}
+			}
+		}
+		
+		Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
+		if (Files.isDirectory(globalStaticDataFolder)) {
+			Path data = globalStaticDataFolder.resolve(name);
+			if (Files.exists(data) && !Files.isDirectory(data)) {
+				builder.add(new StaticDataItem(toGlobalIdentifier(globalStaticDataFolder, data), data));
 			}
 		}
 		
@@ -87,6 +111,21 @@ public class StaticData {
 			}
 		}
 		
+		Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
+		if (Files.isDirectory(globalStaticDataFolder)) {
+			Path datadir = globalStaticDataFolder.resolve(dirname);
+			if (Files.isDirectory(datadir)) {
+				try(Stream<Path> files = Files.walk(datadir)) {
+					files.forEach((it)->{
+						if (Files.isDirectory(it)) return;
+						builder.add(new StaticDataItem(toGlobalIdentifier(globalStaticDataFolder, it), it));
+					});
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		return builder.build();
 	}
 	
@@ -98,6 +137,19 @@ public class StaticData {
 	 */
 	@Nonnull
 	public static Optional<StaticDataItem> get(String modid, String name) {
+		if (modid.equals(GLOBAL_DATA_NAMESPACE)) {
+			Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
+			if (Files.isDirectory(globalStaticDataFolder)) {
+				Path data = globalStaticDataFolder.resolve(name);
+				if (Files.exists(data) && !Files.isDirectory(data)) {
+					return Optional.of(new StaticDataItem(new Identifier(GLOBAL_DATA_NAMESPACE, name), data));
+				}
+			}
+			
+			
+			return Optional.empty();
+		}
+		
 		Optional<ModContainer> containerOpt = FabricLoader.getInstance().getModContainer(modid);
 		if (!containerOpt.isPresent()) return Optional.empty();
 		
@@ -113,6 +165,13 @@ public class StaticData {
 		});
 	}
 	
+	/** Identifier version of {@link #get(String, String)} */
+	@Nonnull
+	public static Optional<StaticDataItem> get(Identifier id) {
+		return get(id.getNamespace(), id.getPath());
+	}
+	
+	
 	/**
 	 * Gets all data from the specified mod and directory.
 	 * @param modid   the mod to search for data
@@ -122,6 +181,25 @@ public class StaticData {
 	@Nonnull
 	public static ImmutableSet<StaticDataItem> getInDirectory(String modid, String dirname) {
 		ImmutableSet.Builder<StaticDataItem> builder = ImmutableSet.builder();
+		
+		if (modid.equals(GLOBAL_DATA_NAMESPACE)) {
+			Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
+			if (Files.isDirectory(globalStaticDataFolder)) {
+				Path datadir = globalStaticDataFolder.resolve(dirname);
+				if (Files.isDirectory(datadir)) {
+					try(Stream<Path> files = Files.walk(datadir)) {
+						files.forEach((it)->{
+							if (Files.isDirectory(it)) return;
+							builder.add(new StaticDataItem(toGlobalIdentifier(globalStaticDataFolder, it), it));
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			return builder.build();
+		}
+		
 		Optional<ModContainer> containerOpt = FabricLoader.getInstance().getModContainer(modid);
 		if (!containerOpt.isPresent()) return builder.build();
 		ModContainer container = containerOpt.get();
@@ -144,11 +222,28 @@ public class StaticData {
 		return builder.build();
 	}
 	
+	/** Identifier version of {@link #getInDirectory(String, String)} */
+	@Nonnull
+	public static ImmutableSet<StaticDataItem> getInDirectory(Identifier id) {
+		return getInDirectory(id.getNamespace(), id.getPath());
+	}
+	
 	
 	private static Identifier toIdentifier(ModContainer container, Path path) {
 		String dir = path.toString();
 		int start = "/static_data/".length();
 		if (dir.length()>=start) dir = dir.substring(start);
 		return new Identifier(container.getMetadata().getId(), dir);
+	}
+	
+	private static Identifier toGlobalIdentifier(Path root, Path path) {
+		String rootString = root.toAbsolutePath().toString();
+		String pathString = path.toAbsolutePath().toString();
+		if (pathString.length()<=rootString.length()) return new Identifier(GLOBAL_DATA_NAMESPACE, "unknown");
+		String relativePath = pathString.substring(rootString.length()); //This is probably the worst way to do it, but it works
+		if (relativePath.startsWith("/") || relativePath.startsWith(""+File.pathSeparatorChar)) {
+			relativePath = relativePath.substring(1);
+		}
+		return new Identifier(GLOBAL_DATA_NAMESPACE, relativePath);
 	}
 }

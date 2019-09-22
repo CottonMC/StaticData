@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-	modImplementation "io.github.cottonmc:StaticData:1.0.0"
-	include "io.github.cottonmc:StaticData:1.0.0"
+	modImplementation "io.github.cottonmc:StaticData:1.1.0"
+	include "io.github.cottonmc:StaticData:1.1.0"
 }
 ```
