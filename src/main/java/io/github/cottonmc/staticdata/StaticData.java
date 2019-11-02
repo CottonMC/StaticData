@@ -23,7 +23,12 @@ public class StaticData {
 			//"global_static_data_with_a_long_name_to_eliminate_name_collisions";
 			// ^ This long namespace was a fantastic idea that looks terrible in log statements and
 			// debug strings. It will not be used, but is archived here for posterity.
-	
+
+
+	static{
+		//creates the folder so we can see that it exists.
+		new File(FabricLoader.getInstance().getGameDirectory(), "static_data").mkdirs();
+	}
 	/**
 	 * Gets all data available. All of it. You should probably use a different method instead. The data
 	 * is returned in no particular order.
@@ -76,7 +81,7 @@ public class StaticData {
 				}
 			}
 		}
-		
+
 		Path globalStaticDataFolder = new File(FabricLoader.getInstance().getGameDirectory(), "static_data").toPath();
 		if (Files.isDirectory(globalStaticDataFolder)) {
 			Path data = globalStaticDataFolder.resolve(name);
