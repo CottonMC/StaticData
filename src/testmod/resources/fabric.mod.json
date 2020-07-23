@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "staticdata-testmod",
+  "version": "0.0.1",
+
+  "name": "Static Data Testmod",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.cottonmc.staticdata.test.StaticDataTests"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.9.0",
+    "staticdata": ">=2.0.0"
+  }
+}
