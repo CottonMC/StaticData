@@ -2,6 +2,13 @@
 
 # Static Data
 
+**The Static Data mod has been moved to the Debuggy org - [StaticData (Debuggy Team)](https://github.com/DebuggyTeam/StaticData)**
+
+All new versions, and the monitored issue tracker, can be found there.
+
+---
+
+
 This mod gives you access to an additional data pool alongside `assets` and `data`, called `static_data`. This pool is available immediately in your ModInitializer, and cannot be overridden or reloaded, so you can use it to bootstrap blocks and items. Additionally, you can request static data from *other* or *all* mods, offering a new route for cooperative data synthesis.
 
 **This mod is open source and under a permissive license.** As such, it can be included in any modpack on any platform without prior permission. We appreciate hearing about people using our mods, but you do not need to ask to use them. See the [LICENSE file](LICENSE) for more details.
